@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import Sidebar from "@/components/ui/Sidebar";
+import Header from "@/components/ui/Header";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -45,7 +46,10 @@ export default function RootLayout({
           {/* Sidebar */}
           <Sidebar />
 
-          <main className="flex-1 p-8 overflow-auto">{children}</main>
+          <div className="w-screen">
+            <Header />
+            <main className="flex-1 p-8 overflow-auto">{children}</main>
+          </div>
 
           {/* Help button */}
           <div className="fixed bottom-4 right-4">
