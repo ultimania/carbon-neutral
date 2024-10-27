@@ -4,7 +4,7 @@ import { Select } from "@/components/ui/Select"
 import { Textarea } from "@/components/ui/Textarea"
 import { CalendarIcon, ChevronDownIcon, HomeIcon, BarChartIcon, FileTextIcon, UsersIcon, CreditCardIcon, BookOpenIcon, HelpCircleIcon } from "lucide-react"
 
-export default function Dashboard() {
+export default function InputArea() {
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
