@@ -1,31 +1,13 @@
-import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
-import { Select } from "@/components/ui/Select"
 import { Textarea } from "@/components/ui/Textarea"
 import { CalendarIcon, ChevronDownIcon, HomeIcon, BarChartIcon, FileTextIcon, UsersIcon, CreditCardIcon, BookOpenIcon, HelpCircleIcon } from "lucide-react"
 
 export default function InputArea() {
   return (
     <div className="flex h-screen bg-gray-100">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-md">
-        <div className="p-4 border-b">
-          <h1 className="text-xl font-bold">CO2 Visualization</h1>
-        </div>
-        <nav className="p-4">
-          <ul className="space-y-2">
-            <li><a href="#" className="flex items-center text-gray-600 hover:text-gray-800"><HomeIcon className="mr-2" size={18} /> ダッシュボード</a></li>
-            <li><a href="#" className="flex items-center text-gray-600 hover:text-gray-800"><BarChartIcon className="mr-2" size={18} /> CO2見える化</a></li>
-            <li><a href="#" className="flex items-center text-gray-600 hover:text-gray-800"><FileTextIcon className="mr-2" size={18} /> 集計ルール管理</a></li>
-            <li><a href="#" className="flex items-center text-gray-600 hover:text-gray-800"><UsersIcon className="mr-2" size={18} /> 会社情報</a></li>
-            <li><a href="#" className="flex items-center text-gray-600 hover:text-gray-800"><CreditCardIcon className="mr-2" size={18} /> CO2削減目標</a></li>
-            <li><a href="#" className="flex items-center text-gray-600 hover:text-gray-800"><BookOpenIcon className="mr-2" size={18} /> マニュアル</a></li>
-          </ul>
-        </nav>
-      </aside>
 
       {/* Main content */}
-      <main className="flex-1 p-8 overflow-auto">
+
         <h2 className="text-2xl font-bold mb-6">CO2見える化</h2>
 
         {/* Form */}
@@ -89,15 +71,7 @@ export default function InputArea() {
             </table>
           </div>
         </div>
-      </main>
 
-      {/* Help button */}
-      <div className="fixed bottom-4 right-4">
-        <Button className="bg-teal-500 hover:bg-teal-600 text-white">
-          <HelpCircleIcon className="mr-2" size={18} />
-          Need help?
-        </Button>
-      </div>
     </div>
   )
 }
