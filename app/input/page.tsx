@@ -3,7 +3,7 @@ import { Textarea } from "@/components/ui/Textarea";
 
 export default function InputArea() {
   return (
-    <div className="h-screen bg-gray-100">
+    <div className="bg-gray-100">
       {/* Main content */}
 
       {/* Form */}

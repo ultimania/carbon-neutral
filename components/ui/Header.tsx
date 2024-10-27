@@ -1,23 +1,13 @@
-import Link from "next/link";
 import { SettingsIcon, BellIcon, UserIcon } from "lucide-react";
+import Breadcrumbs from "./Breadcrumbs";
 
 export default function Header() {
   return (
     <header className="flex items-center justify-between p-4 bg-white shadow-md">
       {/* Breadcrumb */}
-      <nav className="flex items-center space-x-4">
-        <Link href="/" className="text-primary hover:underline">
-          Home
-        </Link>
-        <span>/</span>
-        <Link href="/section" className="text-primary hover:underline">
-          Section
-        </Link>
-        <span>/</span>
-        <Link href="/subsection" className="text-primary hover:underline">
-          Subsection
-        </Link>
-      </nav>
+      <div className="w-3/6">
+        <Breadcrumbs />
+      </div>
 
       {/* Search Box */}
       <div className="flex-grow mx-4">
