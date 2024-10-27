@@ -43,7 +43,7 @@ const locationData = [
   { name: '長野工場', co2: 5.8, energy: 161, cost: 392820 },
 ]
 
-export default function CO2Dashboard() {
+export default function Dashboard() {
   return (
     <div className="p-4 space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

@@ -2,14 +2,6 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import {
-  CalendarIcon,
-  ChevronDownIcon,
-  HomeIcon,
-  BarChartIcon,
-  FileTextIcon,
-  UsersIcon,
-  CreditCardIcon,
-  BookOpenIcon,
   HelpCircleIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";

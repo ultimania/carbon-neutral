@@ -4,10 +4,7 @@ import { Textarea } from "@/components/ui/Textarea";
 export default function InputArea() {
   return (
     <div className="bg-gray-100">
-      {/* Main content */}
-
-      {/* Form */}
-      <div className="bg-white p-6 rounded-lg shadow mb-6">
+      <div className="bg-white p-4 rounded-lg shadow mb-6">
         <h3 className="text-lg font-semibold mb-4">燃料費の登録</h3>
         <form className="space-y-4">
           <div>
