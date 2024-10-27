@@ -3,6 +3,8 @@
 @tailwind utilities;
 
 :root {
+  --color-primary: #10b981;
+  --color-primary-text: #2c2c2c;
   --background: #ffffff;
   --foreground: #171717;
 }
@@ -24,4 +26,13 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+.button-primary {
+  background: var(--color-primary);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  border: none;
+  cursor: pointer;
 }

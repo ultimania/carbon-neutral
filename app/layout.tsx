@@ -41,7 +41,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="flex h-screen bg-gray-100">
+        <div className="flex h-screen bg-gray-100 text-primary-text">
           {/* Sidebar */}
           <Sidebar />
 

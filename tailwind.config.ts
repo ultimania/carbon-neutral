@@ -1,3 +1,4 @@
+import { text } from "stream/consumers";
 import type { Config } from "tailwindcss";
 
 const config: Config = {
@@ -9,6 +10,8 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        "primary": "var(--color-primary)",
+        "primary-text": "var(--color-primary-text)",
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
