@@ -13,6 +13,7 @@ import {
   HelpCircleIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import Sidebar from "@/components/ui/Sidebar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -42,63 +43,7 @@ export default function RootLayout({
       >
         <div className="flex h-screen bg-gray-100">
           {/* Sidebar */}
-          <aside className="w-64 bg-white shadow-md">
-            <div className="p-4 border-b">
-              <h1 className="text-xl font-bold">CO2 Visualization</h1>
-            </div>
-            <nav className="p-4">
-              <ul className="space-y-2">
-                <li>
-                  <a
-                    href="#"
-                    className="flex items-center text-gray-600 hover:text-gray-800"
-                  >
-                    <HomeIcon className="mr-2" size={18} /> ダッシュボード
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="flex items-center text-gray-600 hover:text-gray-800"
-                  >
-                    <BarChartIcon className="mr-2" size={18} /> CO2見える化
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="flex items-center text-gray-600 hover:text-gray-800"
-                  >
-                    <FileTextIcon className="mr-2" size={18} /> 集計ルール管理
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="flex items-center text-gray-600 hover:text-gray-800"
-                  >
-                    <UsersIcon className="mr-2" size={18} /> 会社情報
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="flex items-center text-gray-600 hover:text-gray-800"
-                  >
-                    <CreditCardIcon className="mr-2" size={18} /> CO2削減目標
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="flex items-center text-gray-600 hover:text-gray-800"
-                  >
-                    <BookOpenIcon className="mr-2" size={18} /> マニュアル
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </aside>
+          <Sidebar />
 
           <main className="flex-1 p-8 overflow-auto">{children}</main>
 
