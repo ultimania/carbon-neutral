@@ -1,12 +1,14 @@
 import React from "react";
-import { InputForm, InputFormFields } from "@/components/ui/InputForm";
+import { InputForm, InputFormSchema } from "@/components/ui/InputForm";
 import { Payment } from "@/models/Payment";
 import { DataTable } from "./data-table";
 import { columns } from "./columns";
+import { z } from "zod";
+import { SubmitHandler } from "react-hook-form";
 
-const fuelOptions = ["ガソリン", "軽油", "灯油"];
+const fuelOptions = ["電気", "ガス", "ガソリン", "軽油", "灯油"];
 
-const formFields: InputFormFields<Payment> = [
+const formSchema: InputFormSchema<Payment>[] = [
   {
     label: "金額",
     type: "number",
@@ -16,7 +18,7 @@ const formFields: InputFormFields<Payment> = [
   },
   {
     label: "燃料区分",
-    type: "dropdown",
+    type: "select",
     name: "item",
     required: true,
     options: fuelOptions,
@@ -27,35 +29,8 @@ const formFields: InputFormFields<Payment> = [
     type: "date",
     name: "paymentDate",
     required: true,
-  }
+  },
 ];
-
-const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-  "use server";
-  event.preventDefault();
-  // Payment型のデータを作成
-  const formData = new FormData(event.currentTarget);
-  const data: Payment = {
-    amount: Number(formData.get("amount")),
-    item: formData.get("item") as string,
-    paymentDate: formData.get("paymentDate") as string,
-    personInCharge: "",
-    approvalDate: "",
-    status: "仮登録",
-    department: "",
-  };
-
-  // APIにデータを送信
-  await fetch("/api/payment", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-
-
-};
 
 async function getData(): Promise<Payment[]> {
   // Fetch data from your API here.
@@ -63,9 +38,9 @@ async function getData(): Promise<Payment[]> {
     {
       amount: 1829932,
       item: "電気料金",
-      paymentDate: "2023/10/20",
+      paymentDate: new Date("2023/10/21"),
       personInCharge: "田中太郎",
-      approvalDate: "2023/10/21",
+      approvalDate: new Date("2023/10/21"),
       status: "仮登録",
       department: "東京本社",
     },
@@ -75,10 +50,13 @@ async function getData(): Promise<Payment[]> {
 
 export default async function Page() {
   const data = await getData();
+  const PersonResult = z.object({
+    name: z.string(),
+  });
 
   return (
     <div className="bg-gray-100">
-      <InputForm fields={formFields} onSubmit={handleSubmit} />
+      <InputForm schema={formSchema} />
 
       {/* Data table */}
       <div className="container mx-auto py-10">

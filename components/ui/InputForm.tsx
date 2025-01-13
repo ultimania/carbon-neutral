@@ -1,10 +1,9 @@
+import Form from "next/form";
+import { Button } from "./Button";
+import { Input } from "./Input";
+import prisma from "@/lib/prisma";
 
-import React from 'react';
-import { Dropdown } from './Dropdown';
-import { Textarea } from './Textarea';
-import { Input } from './Input';
-
-interface InputFormField<T> {
+export interface InputFormSchema<T> {
   label: string;
   type: string;
   name: keyof T;
@@ -13,36 +12,66 @@ interface InputFormField<T> {
   placeholder?: string;
 }
 
-export type InputFormFields<T> = InputFormField<T>[];
-
-interface InputFormProps{
-  fields: InputFormFields<any>;
-  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+export interface InputFormProps<T extends Record<string, unknown>> {
+  schema: InputFormSchema<T>[];
 }
 
-export const InputForm: React.FC<InputFormProps> = ({ fields, onSubmit }) => {
+export const InputForm = <T extends Record<string, unknown>>(
+  { schema }: InputFormProps<T>,
+  ...props: any[]
+) => {
+  const submitFormAction = async (formData: FormData) => {
+    "use server";
+
+    // TODO: validate the form data
+    console.log("Not implemented yet");
+
+    // create a new record in the database by prisma
+    const data = {
+      data: {
+        amount: Number(formData.get("amount")),
+        item: formData.get("item") as string,
+        paymentDate: new Date(formData.get("paymentDate") as string),
+        userInChargeId: "0",
+        status: "仮登録",
+        departmentId: "0",
+      },
+    };
+    console.log(data);
+    await prisma.payment.create(data);
+  };
+
   return (
-    <div className="bg-white p-4 rounded-lg shadow mb-6">
-      <h3 className="text-lg font-semibold mb-4">燃料費の登録</h3>
-      <form className="space-y-4" onSubmit={onSubmit}>
-        {fields.map((field, index) => (
-          <div key={index}>
-            <label className="block text-sm font-medium">{field.label}</label>
-            <div>
-              {field.type === 'dropdown' ? (
-                <Dropdown options={field.options || []} defaultOption={field.placeholder || ''} />
-              ) : field.type === 'textarea' ? (
-                <Textarea placeholder={field.placeholder || ''} />
-              ) : (
-                <Input type={field.type} placeholder={field.placeholder || ''} />
-              )}
+    <Form action={submitFormAction} {...props}>
+      {schema.map((field) => {
+        return (
+          <label key={field.name as string} className="flex flex-col my-2 py-2">
+            <div className="flex my-2">
+              {field.label}
+              {field.required && <span>*</span>}
             </div>
-          </div>
-        ))}
-        <button type="submit" className="button-primary">
-          登録
-        </button>
-      </form>
-    </div>
+            {field.type === "select" ? (
+              <select name={field.name as string}>
+                {field.options?.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <Input
+                type={field.type}
+                name={field.name as string}
+                required={field.required}
+                placeholder={field.placeholder}
+              />
+            )}
+          </label>
+        );
+      })}
+      <Button type="submit" className="py-4 my-4">
+        登録
+      </Button>
+    </Form>
   );
 };

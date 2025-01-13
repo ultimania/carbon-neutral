@@ -1,7 +1,8 @@
-"use client";
-
+"use client";;
 import { useSelectedLayoutSegment } from 'next/navigation';
 import Link from 'next/link';
+
+import type { JSX } from "react";
 
 export default function Breadcrumbs() {
   const segment = useSelectedLayoutSegment();
@@ -35,4 +36,4 @@ export default function Breadcrumbs() {
       {createBreadcrumbs()}
     </nav>
   );
-};
+}
