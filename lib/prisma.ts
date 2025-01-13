@@ -1,9 +1,12 @@
 // PrismaClientをインポート
 import { PrismaClient } from "@prisma/client";
 
-declare global {
-  var prisma: PrismaClient | undefined;
+// グローバルオブジェクトにPrismaClientを追加
+interface CustomNodeJsGlobal {
+  prisma: PrismaClient;
 }
+
+declare const global: CustomNodeJsGlobal;
 
 // PrismaClientインスタンスを初期化
 let prisma: PrismaClient;

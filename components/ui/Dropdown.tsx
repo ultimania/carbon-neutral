@@ -19,7 +19,7 @@ export const Dropdown: React.FC<DropdownProps> = (
   ...props
 ) => {
   return (
-    <Select onValueChange={onChange}>
+    <Select onValueChange={onChange} {...props} defaultValue={defaultOption}>
       <SelectTrigger className={className}>
         <SelectValue placeholder="Theme" />
       </SelectTrigger>
