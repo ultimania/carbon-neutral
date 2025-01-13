@@ -1,11 +1,10 @@
-"use client"
+"use client";
 
-import { Payment } from "@/models/Payment"
-import { ColumnDef } from "@tanstack/react-table"
+import { Payment } from "@/models/Payment";
+import { ColumnDef } from "@tanstack/react-table";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-
 
 export const columns: ColumnDef<Payment>[] = [
   {
@@ -19,6 +18,10 @@ export const columns: ColumnDef<Payment>[] = [
   {
     header: "支払日",
     accessorKey: "paymentDate",
+    cell: ({ row }) => {
+      const date = new Date(row.original.paymentDate);
+      return date.toISOString().split('T')[0];
+    },
   },
   {
     header: "担当者",
@@ -27,6 +30,13 @@ export const columns: ColumnDef<Payment>[] = [
   {
     header: "承認日",
     accessorKey: "approvalDate",
+    cell: ({ row }) => {
+      if (row.original.approvalDate) {
+        const date = new Date(row.original.approvalDate);
+        return date.toISOString().split('T')[0];
+      }
+      return "";
+    },
   },
   {
     header: "ステータス",
@@ -36,4 +46,4 @@ export const columns: ColumnDef<Payment>[] = [
     header: "部門",
     accessorKey: "department",
   },
-]
+];
