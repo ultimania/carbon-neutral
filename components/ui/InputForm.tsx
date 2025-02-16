@@ -45,13 +45,13 @@ export const InputForm = <T extends Record<string, unknown>>(
     <Form action={submitFormAction} {...props}>
       {schema.map((field) => {
         return (
-          <label key={field.name as string} className="flex flex-col my-2 py-2">
+          <label key={field.name as string} className="input-form">
             <div className="flex my-2">
               {field.label}
               {field.required && <span>*</span>}
             </div>
             {field.type === "select" ? (
-              <select name={field.name as string}>
+              <select name={field.name as string} className="w-full p-2 border border-gray-400 rounded">
                 {field.options?.map((option) => (
                   <option key={option} value={option}>
                     {option}
@@ -64,12 +64,13 @@ export const InputForm = <T extends Record<string, unknown>>(
                 name={field.name as string}
                 required={field.required}
                 placeholder={field.placeholder}
+                className="w-full p-2 border border-gray-400 rounded"
               />
             )}
           </label>
         );
       })}
-      <Button type="submit" className="py-4 my-4">
+      <Button type="submit" className="button">
         登録
       </Button>
     </Form>
