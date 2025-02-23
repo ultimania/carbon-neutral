@@ -19,9 +19,7 @@ export async function GET(
     const workflows = await prisma.workflow.findMany({
       include: {
         payment: true,
-        requestedBy: {
-          include: { department: true },
-        },
+        requestedBy: true,
       },
     });
 
@@ -32,7 +30,7 @@ export async function GET(
       personInCharge: workflow.requestedBy.name,
       approvalDate: workflow.approvalDate ? workflow.approvalDate.toLocaleDateString() : null,
       status: workflow.status,
-      department: workflow.requestedBy.departmentId ? workflow.requestedBy.department.name : null,
+      provider: workflow.payment.provider,
     }));
 
     return new Response(JSON.stringify({ data: data }), {
@@ -40,6 +38,32 @@ export async function GET(
     });
   } catch (error) {
     console.error('Error fetching payments:', error);
+    throw error;
+  }
+}
+
+export async function POST(
+  request: Request
+) {
+  try {
+    const body = await request.json();
+    const data = {
+      data: {
+        amount: body.amount,
+        item: body.item,
+        paymentDate: new Date(body.paymentDate),
+        userInChargeId: '0',
+        status: '仮登録',
+        departmentId: '0',
+      },
+    };
+    await prisma.payment.create(data);
+
+    return new Response(JSON.stringify({ message: 'Success' }), {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (error) {
+    console.error('Error creating payment:', error);
     throw error;
   }
 }

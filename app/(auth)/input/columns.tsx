@@ -40,7 +40,7 @@ export const columns: ColumnDef<Payment>[] = [
     accessorKey: "status",
   },
   {
-    header: "部門",
-    accessorKey: "department",
+    header: "契約会社",
+    accessorKey: "provider",
   },
 ];

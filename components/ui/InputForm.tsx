@@ -10,6 +10,7 @@ export interface InputFormSchema<T> {
   required: boolean;
   options?: string[];
   placeholder?: string;
+  hidden?: boolean;
 }
 
 export interface InputFormProps<T extends Record<string, unknown>> {
@@ -26,24 +27,18 @@ export const InputForm = <T extends Record<string, unknown>>(
     // TODO: validate the form data
     console.log("Not implemented yet");
 
-    // create a new record in the database by prisma
-    const data = {
-      data: {
-        amount: Number(formData.get("amount")),
-        item: formData.get("item") as string,
-        paymentDate: new Date(formData.get("paymentDate") as string),
-        userInChargeId: "0",
-        status: "仮登録",
-        departmentId: "0",
-      },
-    };
-    console.log(data);
-    await prisma.payment.create(data);
+    // post the form data to the server
+    const response = await fetch("/api/payments", {
+      method: "POST",
+      body: formData,
+    });
+
   };
 
   return (
     <Form action={submitFormAction} {...props}>
       {schema.map((field) => {
+        if (field.hidden) return null;
         return (
           <label key={field.name as string} className="input-form">
             <div className="flex my-2">

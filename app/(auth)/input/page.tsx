@@ -28,6 +28,34 @@ const formSchema: InputFormSchema<Payment>[] = [
     name: "paymentDate",
     required: true,
   },
+  {
+    label: "担当者",
+    type: "text",
+    name: "personInCharge",
+    required: false,
+    hidden: true,
+  },
+  {
+    label: "承認日",
+    type: "date",
+    name: "approvalDate",
+    required: false,
+    hidden: true,
+  },
+  {
+    label: "ステータス",
+    type: "text",
+    name: "status",
+    required: false,
+    hidden: true,
+  },
+  {
+    label: "部門",
+    type: "text",
+    name: "department",
+    required: false,
+    hidden: true,
+  }
 ];
 
 export default function Page() {

@@ -43,6 +43,7 @@ model Payment {
   id             String   @id @default(cuid())
   amount         Int
   item           String
+  provider       String
   paymentDate    DateTime
   userInChargeId String
   updatedAt      DateTime @default(now()) @map(name: "created_at")

@@ -36,6 +36,7 @@ async function main() {
       item: 'Laptop',
       paymentDate: new Date(),
       userInChargeId: user1.id,
+      provider: 'Apple',
     },
   });
 
@@ -45,6 +46,7 @@ async function main() {
       item: 'Monitor',
       paymentDate: new Date(),
       userInChargeId: user2.id,
+      provider: 'Dell',
     },
   });
 
