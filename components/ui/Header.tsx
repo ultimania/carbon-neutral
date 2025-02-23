@@ -30,7 +30,7 @@ export default function Header() {
         <div className="flex items-center space-x-2">
           <UserIcon size={24} className="text-primary" />
           <span className="text-primary">
-            {session ? session.user?.name : 'User Name'}
+            {session ? session.user?.name : '未ログイン'}
           </span>
         </div>
       </div>
