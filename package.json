@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "seed": "npx tsx prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.3.1",
@@ -22,12 +23,14 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "recharts": "^2.15.0",
+    "swr": "^2.3.2",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
+    "tsx": "^4.19.3",
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/node": "^20.17.19",
     "@types/react": "19.0.6",
     "@types/react-dom": "19.0.3",
     "eslint": "^8",
@@ -35,10 +38,14 @@
     "postcss": "^8",
     "prisma": "^6.2.1",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
   },
   "overrides": {
     "@types/react": "19.0.6",
     "@types/react-dom": "19.0.3"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }

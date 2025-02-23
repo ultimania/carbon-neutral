@@ -3,9 +3,6 @@
 import { Payment } from "@/models/Payment";
 import { ColumnDef } from "@tanstack/react-table";
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-
 export const columns: ColumnDef<Payment>[] = [
   {
     header: "金額",
@@ -20,7 +17,7 @@ export const columns: ColumnDef<Payment>[] = [
     accessorKey: "paymentDate",
     cell: ({ row }) => {
       const date = new Date(row.original.paymentDate);
-      return date.toISOString().split('T')[0];
+      return date.toLocaleDateString();
     },
   },
   {
@@ -33,7 +30,7 @@ export const columns: ColumnDef<Payment>[] = [
     cell: ({ row }) => {
       if (row.original.approvalDate) {
         const date = new Date(row.original.approvalDate);
-        return date.toISOString().split('T')[0];
+        return date.toLocaleDateString();
       }
       return "";
     },

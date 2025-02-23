@@ -1,6 +1,9 @@
+'use client'
+
 import { Search, ChevronRight } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { useEffect, useState } from "react"
 
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
@@ -15,66 +18,18 @@ interface Request {
   note: string
 }
 
-const requests: Request[] = [
-  {
-    id: "1",
-    name: "Aaron Taylor",
-    avatar: "/placeholder.svg?height=32&width=32",
-    type: "Design seat",
-    typeIcon: "🎨",
-    note: "Looking for a license so that I...",
-  },
-  {
-    id: "2",
-    name: "Kai Johnson",
-    avatar: "/placeholder.svg?height=32&width=32",
-    type: "Fig/Jam seat",
-    typeIcon: "🟣",
-    note: "",
-  },
-  {
-    id: "3",
-    name: "Olivia Nguyen",
-    avatar: "/placeholder.svg?height=32&width=32",
-    type: "Design seat",
-    typeIcon: "🎨",
-    note: "I'm an external consultant from...",
-  },
-  {
-    id: "4",
-    name: "Cameron Smith",
-    avatar: "/placeholder.svg?height=32&width=32",
-    type: "Dev Mode seat",
-    typeIcon: "💻",
-    note: "I'm working on a project for the...",
-  },
-  {
-    id: "5",
-    name: "Ethan Brown",
-    avatar: "/placeholder.svg?height=32&width=32",
-    type: "Fig/Jam seat",
-    typeIcon: "🟣",
-    note: "",
-  },
-  {
-    id: "6",
-    name: "Aehlyn Kim",
-    avatar: "/placeholder.svg?height=32&width=32",
-    type: "Design seat",
-    typeIcon: "🎨",
-    note: "I recently joined Twigma and...",
-  },
-  {
-    id: "7",
-    name: "Brit Martinez",
-    avatar: "/placeholder.svg?height=32&width=32",
-    type: "Fig/Jam seat",
-    typeIcon: "🟣",
-    note: "",
-  },
-]
-
 export default function UpgradeRequests() {
+  const [requests, setRequests] = useState<Request[]>([])
+
+  useEffect(() => {
+    async function fetchRequests() {
+      const response = await fetch("/api/workflows")
+      const data = await response.json()
+      setRequests(data)
+    }
+    fetchRequests()
+  }, [])
+
   return (
     <div className="w-full max-w-4xl mx-auto p-4">
       <div className="flex items-center justify-between mb-4">
@@ -87,10 +42,10 @@ export default function UpgradeRequests() {
         <div className="flex items-center gap-2">
           <Link href="workflow/history">
             <Button variant="outline">
-              View history
+              承認履歴
             </Button>
           </Link>
-          <Button>Approve all</Button>
+          <Button>すべて承認</Button>
         </div>
       </div>
 

@@ -71,24 +71,26 @@ const Dashboard = () => {
   const [monthlyCosts, setMonthlyCosts] = useState<MonthlyCost[]>([]);
 
   useEffect(() => {
-    const fetchCostData = async () => {
-      try {
-        const response = await fetch("/api/costs");
-        if (!response.ok) throw new Error("Failed to fetch data");
-        const { data } = await response.json();
+    const fetchCostData = () => {
+      fetch("/api/payments")
+        .then((response) => {
+          if (!response.ok) throw new Error("Failed to fetch data");
+          return response.json();
+        })
+        .then(({ data }) => {
+          // Convert the data into an array of objects with month and amount properties
+          const chartData: MonthlyCost[] = Object.entries(data).map(
+            ([month, amount]) => ({
+              month,
+              amount: Number(amount),
+            })
+          );
 
-        // Convert the data into an array of objects with month and amount properties
-        const chartData: MonthlyCost[] = Object.entries(data).map(
-          ([month, amount]) => ({
-            month,
-            amount: Number(amount),
-          })
-        );
-
-        setMonthlyCosts(chartData);
-      } catch (error) {
-        console.error("Error fetching cost data:", error);
-      }
+          setMonthlyCosts(chartData);
+        })
+        .catch((error) => {
+          console.error("Error fetching cost data:", error);
+        });
     };
 
     fetchCostData();

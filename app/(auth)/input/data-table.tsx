@@ -15,18 +15,39 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/Table";
+import { useState, useEffect } from "react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
-  data: TData[];
 }
 
 export function DataTable<TData, TValue>({
   columns,
-  data,
 }: DataTableProps<TData, TValue>) {
+  const [data, setData] = useState<TData[]>([]);
+
+  useEffect(() => {
+    const fetchCostData = () => {
+      fetch("/api/payments")
+        .then((response) => {
+          if (!response.ok) throw new Error("Failed to fetch data");
+          return response.json();
+        })
+        .then(({ data }) => {
+          console.log("Data fetched:", data);
+          // setData from data
+          setData(data);
+       })
+        .catch((error) => {
+          console.error("Error fetching cost data:", error);
+        });
+    };
+
+    fetchCostData();
+  }, []);
+
   const table = useReactTable({
-    data,
+    data: data || [], // Ensure data is an empty array if undefined
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
