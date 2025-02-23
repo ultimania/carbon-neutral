@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import {
-  HelpCircleIcon,
-} from "lucide-react";
+import { HelpCircleIcon } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import Sidebar from "@/components/ui/Sidebar";
 import Header from "@/components/ui/Header";
+import { NextAuthProvider } from "@/providers/NextAuth";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,26 +18,26 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`antialiased`}
-      >
-        <div className="flex h-screen bg-gray-100 text-primary-text">
-          {/* Sidebar */}
-          <Sidebar />
+      <body className={`antialiased`}>
+        <NextAuthProvider>
+          <div className="flex h-screen bg-gray-100 text-primary-text">
+            {/* Sidebar */}
+            <Sidebar />
 
-          <div className="w-screen">
-            <Header />
-            <main className="flex-1 p-8 overflow-auto">{children}</main>
-          </div>
+            <div className="w-screen">
+              <Header />
+              <main className="flex-1 p-8 overflow-auto">{children}</main>
+            </div>
 
-          {/* Help button */}
-          <div className="fixed bottom-4 right-4">
-            <Button className="bg-teal-500 hover:bg-teal-600 text-white">
-              <HelpCircleIcon className="mr-2" size={18} />
-              Need help?
-            </Button>
+            {/* Help button */}
+            <div className="fixed bottom-4 right-4">
+              <Button className="bg-teal-500 hover:bg-teal-600 text-white">
+                <HelpCircleIcon className="mr-2" size={18} />
+                Need help?
+              </Button>
+            </div>
           </div>
-        </div>
+        </NextAuthProvider>
       </body>
     </html>
   );
