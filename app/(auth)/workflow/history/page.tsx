@@ -91,7 +91,7 @@ export default function ApprovalHistory() {
   )
 
   return (
-    <Card className="w-full max-w-4xl mx-auto p-4">
+    <Card className="w-full max-w-5xl mx-auto p-4">
       <div className="flex items-center gap-4 mb-6">
         <h1 className="text-xl font-semibold">承認履歴</h1>
       </div>

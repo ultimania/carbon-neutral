@@ -23,6 +23,7 @@ export default function UpgradeRequests() {
     (Workflow & { requestedBy: User; payment: Payment })[]
   >([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [sortOrder, setSortOrder] = useState("newest");
 
   useEffect(() => {
     async function fetchRequests() {
@@ -47,6 +48,12 @@ export default function UpgradeRequests() {
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
     return matchesName || matchesFuelType || matchesProvider;
+  });
+
+  const sortedWorkflows = [...filteredWorkflows].sort((a, b) => {
+    const dateA = new Date(a.payment.paymentDate);
+    const dateB = new Date(b.payment.paymentDate);
+    return sortOrder === "newest" ? dateB.getTime() - dateA.getTime() : dateA.getTime() - dateB.getTime();
   });
 
   const handleApprove = async (id: string) => {
@@ -117,13 +124,13 @@ export default function UpgradeRequests() {
             <SelectItem value="dev">Dev Mode seat</SelectItem>
           </SelectContent>
         </Select>
-        <Select defaultValue="newest">
+        <Select defaultValue="newest" onValueChange={(value) => setSortOrder(value)}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Sort: Newest first" />
+            <SelectValue placeholder="Sort: Newest" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="newest">Newest first</SelectItem>
-            <SelectItem value="oldest">Oldest first</SelectItem>
+            <SelectItem value="newest">Newest</SelectItem>
+            <SelectItem value="oldest">Oldest</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -138,7 +145,7 @@ export default function UpgradeRequests() {
           <div>契約会社</div>
           <div>承認</div>
         </div>
-        {filteredWorkflows.map((workflow) => (
+        {sortedWorkflows.map((workflow) => (
           <div
             key={workflow.id}
             className="px-4 py-2 grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr] items-center gap-4 hover:bg-muted/50"
