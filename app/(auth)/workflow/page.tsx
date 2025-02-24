@@ -87,6 +87,35 @@ export default function UpgradeRequests() {
     }
   };
 
+  const handleReject = async (id: string) => {
+    try {
+      const response = await fetch("/api/workflows", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id,
+          status: "Rejected",
+          approvedByName: session?.user?.name,
+        }),
+      });
+
+      if (response.ok) {
+        const updatedWorkflow = await response.json();
+        setWorkflows((prevWorkflows) =>
+          prevWorkflows.map((workflow) =>
+            workflow.id === id ? { ...workflow, status: "Rejected" } : workflow
+          )
+        );
+      } else {
+        console.error("Failed to reject workflow");
+      }
+    } catch (error) {
+      console.error("Error rejecting workflow:", error);
+    }
+  };
+
   return (
     <Card className="w-full max-w-5xl mx-auto p-4">
       <div className="flex items-center justify-between mb-4">
@@ -149,7 +178,7 @@ export default function UpgradeRequests() {
           <div>金額</div>
           <div>支払日</div>
           <div>契約会社</div>
-          <div>承認</div>
+          <div>承認/却下</div>
         </div>
         {filteredWorkflows.map((workflow) => (
           <div
@@ -186,6 +215,14 @@ export default function UpgradeRequests() {
                 disabled={workflow.status === "Approved"}
               >
                 {workflow.status === "Approved" ? "承認済み" : "承認"}
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => handleReject(workflow.id)}
+                disabled={workflow.status === "Rejected"}
+              >
+                {workflow.status === "Rejected" ? "却下済み" : "却下"}
               </Button>
             </div>
           </div>

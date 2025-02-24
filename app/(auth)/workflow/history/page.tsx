@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Search, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Search, CheckCircle2, XCircle } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -28,11 +28,13 @@ export default function ApprovalHistory() {
 
   useEffect(() => {
     async function fetchRequests() {
-      const response = await fetch(
-        "/api/workflows?status=Approved"
-      );
+      const response = await fetch("/api/workflows");
       const data = await response.json();
-      setWorkflows(data.data);
+      setWorkflows(
+        data.data.filter(
+          (workflow: Workflow) => workflow.status !== "Unapproved"
+        )
+      );
     }
     fetchRequests();
   }, []);
@@ -107,14 +109,14 @@ export default function ApprovalHistory() {
             </div>
             <div className="flex items-center gap-2">
               <img
-                src={workflow.approvedBy.image || "/avatar.png"}
-                alt={workflow.approvedBy.name || "User avatar"}
+                src={workflow.approvedBy?.image || "/avatar.png"}
+                alt={workflow.approvedBy?.name || "User avatar"}
                 width={24}
                 height={24}
                 className="rounded-full"
               />
               <span className="text-sm font-medium">
-                {workflow.approvedBy.name}
+                {workflow.approvedBy?.name}
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -135,10 +137,17 @@ export default function ApprovalHistory() {
             <div className="flex items-center gap-2">
               <span className="text-sm">{workflow.payment.amount}円</span>
             </div>
-            <div className="flex items-center gap-1 text-green-600">
-              <CheckCircle2 className="h-4 w-4" />
-              <span className="text-sm">Approved</span>
-            </div>
+            {workflow.status === "Approved" ? (
+              <div className="flex items-center gap-1 text-green-600">
+                <CheckCircle2 className="h-4 w-4" />
+                <span className="text-sm">Approved</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1 text-red-600">
+                <XCircle className="h-4 w-4" />
+                <span className="text-sm">Rejected</span>
+              </div>
+            )}
           </div>
         ))}
       </div>
