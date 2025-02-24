@@ -28,9 +28,6 @@ export async function POST(request: Request) {
         approvedById: body.approvedById || null,
         type: body.type,
         typeIcon: body.typeIcon,
-        //requestedBy: body.payment.data.userInChargeId,
-        //approvedBy: body.approvedById || null,
-        //payment: body.payment.data
       },
     };
     const result = await prisma.workflow.create(workflowData);
