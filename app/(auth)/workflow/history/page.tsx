@@ -1,8 +1,12 @@
+'use client';
+
 import { ArrowLeft, Search, CheckCircle2 } from "lucide-react"
 import Image from "next/image"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useState } from "react"
+import { Card } from "@/components/ui/Card";
 
 interface ApprovalHistory {
   id: string
@@ -79,8 +83,15 @@ const approvalHistory: ApprovalHistory[] = [
 ]
 
 export default function ApprovalHistory() {
+  const [searchTerm, setSearchTerm] = useState("")
+
+  const filteredHistory = approvalHistory.filter((history) =>
+    history.approver.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    history.requestor.name.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
   return (
-    <div className="w-full max-w-4xl mx-auto p-4">
+    <Card className="w-full max-w-4xl mx-auto p-4">
       <div className="flex items-center gap-4 mb-6">
         <h1 className="text-xl font-semibold">承認履歴</h1>
       </div>
@@ -88,7 +99,12 @@ export default function ApprovalHistory() {
       <div className="flex items-center gap-4 mb-6">
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search by name" className="pl-8" />
+          <Input
+            placeholder="Search by name"
+            className="pl-8"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
         <Select defaultValue="all">
           <SelectTrigger className="w-[180px]">
@@ -120,7 +136,7 @@ export default function ApprovalHistory() {
           <div>Request Type</div>
           <div>Status</div>
         </div>
-        {approvalHistory.map((history) => (
+        {filteredHistory.map((history) => (
           <div
             key={history.id}
             className="px-6 py-4 grid grid-cols-[1fr_1fr_1fr_auto_auto] items-center gap-4 hover:bg-muted/50"
@@ -157,7 +173,7 @@ export default function ApprovalHistory() {
           </div>
         ))}
       </div>
-    </div>
+    </Card>
   )
 }
 

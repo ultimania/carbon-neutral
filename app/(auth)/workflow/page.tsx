@@ -21,6 +21,7 @@ export default function UpgradeRequests() {
   const [workflows, setWorkflows] = useState<
     (Workflow & { requestedBy: User; payment: Payment })[]
   >([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     async function fetchRequests() {
@@ -30,6 +31,15 @@ export default function UpgradeRequests() {
     }
     fetchRequests();
   }, []);
+
+  const [fuelType, setFuelType] = useState("all");
+
+  const filteredWorkflows = workflows.filter((workflow) => {
+    const matchesName = workflow.requestedBy.name?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFuelType = workflow.payment.fuelTypeId.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesProvider = workflow.payment.provider.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesName || matchesFuelType || matchesProvider;
+  });
 
   return (
     <Card className="w-full max-w-5xl mx-auto p-4">
@@ -48,10 +58,16 @@ export default function UpgradeRequests() {
         </div>
       </div>
 
+      {/* フィルタリング */}
       <div className="flex items-center gap-4 mb-6">
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search" className="pl-8" />
+          <Input
+            placeholder="Search"
+            className="pl-8"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
         <Select defaultValue="all">
           <SelectTrigger className="w-[180px]">
@@ -75,6 +91,7 @@ export default function UpgradeRequests() {
         </Select>
       </div>
 
+      {/* データテーブル */}
       <div className="border rounded-lg divide-y">
         <div className="px-4 py-2 text-sm text-muted-foreground grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr] items-center gap-4">
           <div>申請者</div>
@@ -84,7 +101,7 @@ export default function UpgradeRequests() {
           <div>契約会社</div>
           <div>承認</div>
         </div>
-        {workflows.map((workflow) => (
+        {filteredWorkflows.map((workflow) => (
           <div
             key={workflow.id}
             className="px-4 py-2 grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr] items-center gap-4 hover:bg-muted/50"
