@@ -1,7 +1,8 @@
-import Form from "next/form";
+'use client';
+
+import { useState } from "react";
 import { Button } from "./Button";
 import { Input } from "./Input";
-import prisma from "@/lib/prisma";
 
 export interface InputFormSchema<T> {
   label: string;
@@ -15,38 +16,55 @@ export interface InputFormSchema<T> {
 
 export interface InputFormProps<T extends Record<string, unknown>> {
   schema: InputFormSchema<T>[];
+  endpoint: string,
 }
 
 export const InputForm = <T extends Record<string, unknown>>(
-  { schema }: InputFormProps<T>,
+  { schema, endpoint }: InputFormProps<T>,
   ...props: any[]
 ) => {
-  const submitFormAction = async (formData: FormData) => {
-    "use server";
+  const [formData, setFormData] = useState<Record<string, any>>({});
 
-    // TODO: validate the form data
-    console.log("Not implemented yet");
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     // post the form data to the server
-    const response = await fetch("/api/payments", {
+    const response = await fetch(endpoint, {
       method: "POST",
-      body: formData,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
     });
 
+    // handle response
+    if (response.ok) {
+      console.log("Form submitted successfully");
+    } else {
+      console.error("Form submission failed");
+    }
   };
 
   return (
-    <Form action={submitFormAction} {...props}>
+    <form onSubmit={handleSubmit} {...props}>
       {schema.map((field) => {
         if (field.hidden) return null;
         return (
-          <label key={field.name as string} className="input-form">
+          <label key={field.label as string} className="input-form">
             <div className="flex my-2">
               {field.label}
               {field.required && <span>*</span>}
             </div>
             {field.type === "select" ? (
-              <select name={field.name as string} className="w-full p-2 border border-gray-400 rounded">
+              <select
+                name={field.name as string}
+                className="w-full p-2 border border-gray-400 rounded"
+                onChange={handleChange}
+              >
                 {field.options?.map((option) => (
                   <option key={option} value={option}>
                     {option}
@@ -60,6 +78,7 @@ export const InputForm = <T extends Record<string, unknown>>(
                 required={field.required}
                 placeholder={field.placeholder}
                 className="w-full p-2 border border-gray-400 rounded"
+                onChange={handleChange}
               />
             )}
           </label>
@@ -68,6 +87,6 @@ export const InputForm = <T extends Record<string, unknown>>(
       <Button type="submit" className="button">
         登録
       </Button>
-    </Form>
+    </form>
   );
 };

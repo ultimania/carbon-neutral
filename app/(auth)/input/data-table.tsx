@@ -34,8 +34,6 @@ export function DataTable<TData, TValue>({
           return response.json();
         })
         .then(({ data }) => {
-          console.log("Data fetched:", data);
-          // setData from data
           setData(data);
        })
         .catch((error) => {

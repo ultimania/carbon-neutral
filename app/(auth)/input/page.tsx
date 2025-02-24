@@ -1,64 +1,82 @@
-import React from "react";
-import { InputForm, InputFormSchema } from "@/components/ui/InputForm";
-import { Payment } from "@/models/Payment";
+'use client';
+
+import React, { useState, useEffect } from "react";
 import { DataTable } from "./data-table";
 import { columns } from "./columns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-const fuelOptions = ["電気", "ガス", "ガソリン", "軽油", "灯油"];
-
-const formSchema: InputFormSchema<Payment>[] = [
-  {
-    label: "金額",
-    type: "number",
-    name: "amount",
-    required: true,
-    placeholder: "1234567890",
-  },
-  {
-    label: "燃料区分",
-    type: "select",
-    name: "item",
-    required: true,
-    options: fuelOptions,
-    placeholder: "燃料区分を選択してください",
-  },
-  {
-    label: "支払日",
-    type: "date",
-    name: "paymentDate",
-    required: true,
-  },
-  {
-    label: "担当者",
-    type: "text",
-    name: "personInCharge",
-    required: false,
-    hidden: true,
-  },
-  {
-    label: "承認日",
-    type: "date",
-    name: "approvalDate",
-    required: false,
-    hidden: true,
-  },
-  {
-    label: "ステータス",
-    type: "text",
-    name: "status",
-    required: false,
-    hidden: true,
-  },
-  {
-    label: "部門",
-    type: "text",
-    name: "department",
-    required: false,
-    hidden: true,
-  }
-];
+import { useSession } from "next-auth/react";
+import { Payment, Provider } from "@prisma/client";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 export default function Page() {
+  const fuelOptions = ["電気", "ガス", "ガソリン", "軽油", "灯油"];
+  const [providerOptions, setProviderOptions] = useState<string[]>([]);
+  const [formData, setFormData] = useState<Record<string, any>>({});
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    if (session?.user?.email) {
+      fetch(`/api/providers?email=${session.user.email}`)
+        .then((response) => {
+          if (!response.ok) throw new Error("Failed to fetch data");
+          return response.json();
+        })
+        .then(({ data }) => {
+          const providerNames = data.map((provider: Provider) => provider.name);
+          setProviderOptions(providerNames);
+          setFormData((prev) => ({
+            ...prev,
+            provider: providerNames[0] || "",
+            userInCharge: session.user?.name || "",
+          }));
+        })
+        .catch((error) => {
+          console.error("Error fetching provider data:", error);
+        });
+    }
+  }, [session]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const response = await fetch("/api/payments", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+    .then(async(response) => {
+      if (!response.ok) throw new Error("Failed to submit form");
+      // 帰ってきたpaymentデータを元にworkflowデータを作成
+      const payment = await response.json() as Payment;
+      return fetch("/api/workflows", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          payment: payment,
+          status: "Pending",
+          approvedById: null,
+          type: "Purchase",
+          typeIcon: "🛒"
+          }),
+      });
+    });
+
+    if (response.ok) {
+      console.log("Form submitted successfully");
+    } else {
+      console.error("Form submission failed");
+    }
+  };
+
   return (
     <>
       <Card>
@@ -66,7 +84,73 @@ export default function Page() {
           <CardTitle className="text-sm font-medium">燃料消費量登録</CardTitle>
         </CardHeader>
         <CardContent>
-          <InputForm schema={formSchema} />
+          <form onSubmit={handleSubmit}>
+            <label className="input-form">
+              <div className="flex my-2">
+                金額
+                <span>*</span>
+              </div>
+              <Input
+                type="number"
+                name="amount"
+                required
+                placeholder="1234567890"
+                className="w-full p-2 border border-gray-400 rounded"
+                onChange={handleChange}
+              />
+            </label>
+            <label className="input-form">
+              <div className="flex my-2">
+                燃料区分
+                <span>*</span>
+              </div>
+              <select
+                name="fuelType"
+                className="w-full p-2 border border-gray-400 rounded"
+                onChange={handleChange}
+              >
+                {fuelOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="input-form">
+              <div className="flex my-2">
+                支払日
+                <span>*</span>
+              </div>
+              <Input
+                type="date"
+                name="paymentDate"
+                required
+                className="w-full p-2 border border-gray-400 rounded"
+                onChange={handleChange}
+              />
+            </label>
+            <label className="input-form">
+              <div className="flex my-2">
+                契約会社
+                <span>*</span>
+              </div>
+              <select
+                name="provider"
+                className="w-full p-2 border border-gray-400 rounded"
+                onChange={handleChange}
+                value={formData.provider}
+              >
+                {providerOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <Button type="submit" className="button">
+              登録
+            </Button>
+          </form>
         </CardContent>
       </Card>
       <Card className="mt-4">

@@ -22,11 +22,13 @@ model User {
   departmentId  String
   createdAt     DateTime  @default(now()) @map(name: "created_at")
   updatedAt     DateTime  @updatedAt @map(name: "updated_at")
+  officeId      String
 
   requestFlows Workflow[] @relation("RequestedBy")
   approveFlows Workflow[] @relation("ApprovedBy")
   Payment      Payment[]
   department   Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  office       Office     @relation(fields: [officeId], references: [id])
 
   @@map(name: "Users")
 }
@@ -39,10 +41,17 @@ model Department {
   @@map(name: "Departments")
 }
 
+model FuelType {
+  id       String     @id @default(uuid())
+  name     String
+  Payment  Payment[]
+  Provider Provider[]
+}
+
 model Payment {
   id             String   @id @default(cuid())
   amount         Int
-  item           String
+  fuelTypeId     String
   provider       String
   paymentDate    DateTime
   userInChargeId String
@@ -51,6 +60,7 @@ model Payment {
 
   userInCharge User       @relation(fields: [userInChargeId], references: [id])
   Workflow     Workflow[]
+  fuelType     FuelType   @relation(fields: [fuelTypeId], references: [id])
 
   @@map(name: "Payments")
 }
@@ -60,15 +70,39 @@ model Workflow {
   paymentId     String
   requestedById String
   status        String
-  approvedById  String
+  approvedById  String?
   approvalDate  DateTime?
   type          String
   typeIcon      String
   note          String?
+  updatedAt     DateTime  @default(now()) @map(name: "created_at")
+  createdAt     DateTime  @updatedAt @map(name: "updated_at")
 
   requestedBy User    @relation("RequestedBy", fields: [requestedById], references: [id])
-  approvedBy  User    @relation("ApprovedBy", fields: [approvedById], references: [id])
+  approvedBy  User?   @relation("ApprovedBy", fields: [approvedById], references: [id])
   payment     Payment @relation(fields: [paymentId], references: [id])
 
   @@map(name: "Workflows")
+}
+
+model Office {
+  id       String     @id @default(uuid())
+  name     String
+  address1 String
+  address2 String
+  address3 String
+  User     User[]
+  Provider Provider[]
+
+  @@map(name: "Offices")
+}
+
+model Provider {
+  id         String @id @default(uuid())
+  name       String
+  fuelTypeId String
+
+  fuelType FuelType @relation(fields: [fuelTypeId], references: [id])
+  Office   Office?  @relation(fields: [officeId], references: [id])
+  officeId String?
 }

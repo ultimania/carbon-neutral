@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { TypeIcon } from 'lucide-react';
 
 const prisma = new PrismaClient();
 
@@ -25,7 +26,7 @@ export async function GET(
 
     const data = workflows.map(workflow => ({
       amount: workflow.payment.amount,
-      item: workflow.payment.item,
+      item: workflow.payment.fuelTypeId,
       paymentDate: workflow.payment.paymentDate.toLocaleDateString(),
       personInCharge: workflow.requestedBy.name,
       approvalDate: workflow.approvalDate ? workflow.approvalDate.toLocaleDateString() : null,
@@ -47,21 +48,33 @@ export async function POST(
 ) {
   try {
     const body = await request.json();
+    // body.fuelTypeを元にfuelTypeIdを取得
+    const fuelType = await prisma.fuelType.findFirst({
+      where: { name: body.fuelType },
+    });
+    // body.userInChargeを元にuserInChargeIdを取得
+    const userInCharge = await prisma.user.findFirst({
+      where: { name: body.userInCharge },
+    });
+
+    // paymentテーブルにデータを追加
     const data = {
       data: {
-        amount: body.amount,
-        item: body.item,
+        amount: Number(body.amount),
+        fuelTypeId: fuelType?.id || "",
+        provider: body.provider,
         paymentDate: new Date(body.paymentDate),
-        userInChargeId: '0',
-        status: '仮登録',
-        departmentId: '0',
+        userInChargeId: userInCharge?.id || "",
+        createdAt: new Date(),
       },
     };
-    await prisma.payment.create(data);
+    const result = await prisma.payment.create(data);
 
-    return new Response(JSON.stringify({ message: 'Success' }), {
+    // 作成したpayment情報を返す
+    return new Response(JSON.stringify({ data: result }), {
       headers: { 'Content-Type': 'application/json' },
     });
+
   } catch (error) {
     console.error('Error creating payment:', error);
     throw error;

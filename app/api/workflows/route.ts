@@ -1,15 +1,45 @@
-import { NextApiRequest, NextApiResponse } from "next"
-import { PrismaClient } from "@prisma/client"
+import { NextApiRequest, NextApiResponse } from "next";
+import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export async function GET(request: Request) {
+  const workflows = await prisma.workflow.findMany({
+    include: {
+      payment: true,
+      requestedBy: true,
+    },
+  });
+
+  return new Response(JSON.stringify({ data: workflows }), {
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+export async function POST(request: Request) {
   try {
-    const requests = await prisma.workflow.findMany()
-    res.status(200).json(requests)
+    const body = await request.json();
+
+    const workflowData = {
+      data: {
+        paymentId: body.payment.data.id,
+        requestedById: body.payment.data.userInChargeId,
+        status: body.status,
+        approvedById: body.approvedById || null,
+        type: body.type,
+        typeIcon: body.typeIcon,
+        //requestedBy: body.payment.data.userInChargeId,
+        //approvedBy: body.approvedById || null,
+        //payment: body.payment.data
+      },
+    };
+    const result = await prisma.workflow.create(workflowData);
+
+    return new Response(JSON.stringify({ data: result }), {
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch requests" })
-  } finally {
-    await prisma.$disconnect()
+    console.error("Error creating payment:", error);
+    throw error;
   }
 }
