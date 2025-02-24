@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Payment, User, Workflow } from "@prisma/client";
 import { Card } from "@/components/ui/Card";
+import { useSession } from "next-auth/react";
 
 export default function UpgradeRequests() {
   const [workflows, setWorkflows] = useState<
@@ -25,7 +26,7 @@ export default function UpgradeRequests() {
 
   useEffect(() => {
     async function fetchRequests() {
-      const response = await fetch("/api/workflows");
+      const response = await fetch("/api/workflows?status=Unapproved");
       const data = await response.json();
       setWorkflows(data.data);
     }
@@ -33,13 +34,49 @@ export default function UpgradeRequests() {
   }, []);
 
   const [fuelType, setFuelType] = useState("all");
+  const { data: session } = useSession();
 
   const filteredWorkflows = workflows.filter((workflow) => {
-    const matchesName = workflow.requestedBy.name?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFuelType = workflow.payment.fuelTypeId.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesProvider = workflow.payment.provider.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesName = workflow.requestedBy.name
+      ?.toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesFuelType = workflow.payment.fuelTypeId
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesProvider = workflow.payment.provider
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
     return matchesName || matchesFuelType || matchesProvider;
   });
+
+  const handleApprove = async (id: string) => {
+    try {
+      const response = await fetch("/api/workflows", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id,
+          status: "Approved",
+          approvedByName: session?.user?.name,
+        }),
+      });
+
+      if (response.ok) {
+        const updatedWorkflow = await response.json();
+        setWorkflows((prevWorkflows) =>
+          prevWorkflows.map((workflow) =>
+            workflow.id === id ? { ...workflow, status: "Approved" } : workflow
+          )
+        );
+      } else {
+        console.error("Failed to approve workflow");
+      }
+    } catch (error) {
+      console.error("Error approving workflow:", error);
+    }
+  };
 
   return (
     <Card className="w-full max-w-5xl mx-auto p-4">
@@ -129,8 +166,13 @@ export default function UpgradeRequests() {
               {workflow.payment.provider}
             </div>
             <div className="flex items-center gap-2">
-              <Button size="sm" variant="outline">
-                承認
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => handleApprove(workflow.id)}
+                disabled={workflow.status === "Approved"}
+              >
+                {workflow.status === "Approved" ? "承認済み" : "承認"}
               </Button>
             </div>
           </div>
