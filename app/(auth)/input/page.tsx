@@ -10,10 +10,24 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 
 export default function Page() {
-  const fuelOptions = ["電気", "ガス", "ガソリン", "軽油", "灯油"];
   const [providerOptions, setProviderOptions] = useState<string[]>([]);
   const [formData, setFormData] = useState<Record<string, any>>({});
   const { data: session } = useSession();
+  const [fuelOptions, setFuelOptions] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetch("/api/fuelTypes")
+      .then((response) => {
+        if (!response.ok) throw new Error("Failed to fetch fuel types");
+        return response.json();
+      })
+      .then(({ data }) => {
+        setFuelOptions(data.map((fuelType: { name: string }) => fuelType.name));
+      })
+      .catch((error) => {
+        console.error("Error fetching fuel types:", error);
+      });
+  }, []);
 
   useEffect(() => {
     if (session?.user?.email) {
@@ -53,7 +67,7 @@ export default function Page() {
     })
     .then(async(response) => {
       if (!response.ok) throw new Error("Failed to submit form");
-      // 帰ってきたpaymentデータを元にworkflowデータを作成
+      // paymentデータを元にworkflowデータを作成
       const payment = await response.json() as Payment;
       return fetch("/api/workflows", {
         method: "POST",
@@ -62,7 +76,7 @@ export default function Page() {
         },
         body: JSON.stringify({
           payment: payment,
-          status: "Pending",
+          status: "Unapproved",
           approvedById: null,
           type: "Purchase",
           typeIcon: "🛒"

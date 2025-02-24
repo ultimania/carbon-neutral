@@ -9,8 +9,11 @@ export async function GET(request: Request) {
   const workflows = await prisma.workflow.findMany({
     where: status ? { status } : {},
     include: {
-      payment: true,
+      payment: {
+        include: { fuelType: true },
+      },
       requestedBy: true,
+      approvedBy: true,
     },
   });
 
@@ -48,7 +51,7 @@ export async function PUT(request: Request) {
   try {
     const body = await request.json();
     const { id, status, approvedByName } = body;
-    
+
     // Get the user ID from the approvedByName
     const approvedBy = await prisma.user.findFirst({
       where: { name: approvedByName },
@@ -57,10 +60,10 @@ export async function PUT(request: Request) {
 
     const workflow = await prisma.workflow.update({
       where: { id },
-      data: { 
-        status: status, 
+      data: {
+        status: status,
         approvedById: approvedById,
-        approvalDate: new Date(), 
+        approvalDate: new Date(),
       },
     });
 

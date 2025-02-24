@@ -1,94 +1,62 @@
-'use client';
+"use client";
 
-import { ArrowLeft, Search, CheckCircle2 } from "lucide-react"
-import Image from "next/image"
-import { Button } from "@/components/ui/Button"
-import { Input } from "@/components/ui/Input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useState } from "react"
+import { ArrowLeft, Search, CheckCircle2 } from "lucide-react";
+import Image from "next/image";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/Card";
-
-interface ApprovalHistory {
-  id: string
-  approvedAt: string
-  approver: {
-    name: string
-    avatar: string
-  }
-  requestor: {
-    name: string
-    avatar: string
-  }
-  type: string
-  typeIcon: string
-}
-
-const approvalHistory: ApprovalHistory[] = [
-  {
-    id: "1",
-    approvedAt: "2024-02-23 15:30",
-    approver: {
-      name: "Alex Thompson",
-      avatar: "/placeholder.svg?height=32&width=32",
-    },
-    requestor: {
-      name: "Aaron Taylor",
-      avatar: "/placeholder.svg?height=32&width=32",
-    },
-    type: "Design seat",
-    typeIcon: "🎨",
-  },
-  {
-    id: "2",
-    approvedAt: "2024-02-23 14:45",
-    approver: {
-      name: "Alex Thompson",
-      avatar: "/placeholder.svg?height=32&width=32",
-    },
-    requestor: {
-      name: "Kai Johnson",
-      avatar: "/placeholder.svg?height=32&width=32",
-    },
-    type: "Fig/Jam seat",
-    typeIcon: "🟣",
-  },
-  {
-    id: "3",
-    approvedAt: "2024-02-22 16:20",
-    approver: {
-      name: "Sarah Chen",
-      avatar: "/placeholder.svg?height=32&width=32",
-    },
-    requestor: {
-      name: "Olivia Nguyen",
-      avatar: "/placeholder.svg?height=32&width=32",
-    },
-    type: "Design seat",
-    typeIcon: "🎨",
-  },
-  {
-    id: "4",
-    approvedAt: "2024-02-22 11:15",
-    approver: {
-      name: "Sarah Chen",
-      avatar: "/placeholder.svg?height=32&width=32",
-    },
-    requestor: {
-      name: "Cameron Smith",
-      avatar: "/placeholder.svg?height=32&width=32",
-    },
-    type: "Dev Mode seat",
-    typeIcon: "💻",
-  },
-]
+import { Workflow, User, Payment, FuelType } from "@prisma/client";
 
 export default function ApprovalHistory() {
-  const [searchTerm, setSearchTerm] = useState("")
+  const [workflows, setWorkflows] = useState<
+    (Workflow & {
+      requestedBy: User;
+      approvedBy: User;
+      payment: Payment & { fuelType: FuelType };
+    })[]
+  >([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortOrder, setSortOrder] = useState("newest");
 
-  const filteredHistory = approvalHistory.filter((history) =>
-    history.approver.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    history.requestor.name.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  useEffect(() => {
+    async function fetchRequests() {
+      const response = await fetch(
+        "/api/workflows?status=Approved"
+      );
+      const data = await response.json();
+      setWorkflows(data.data);
+    }
+    fetchRequests();
+  }, []);
+
+  const filteredWorkflows = workflows.filter((workflow) => {
+    const matchesName = workflow.requestedBy.name
+      ?.toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesFuelType = workflow.payment.fuelType.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesProvider = workflow.payment.provider
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    return matchesName || matchesFuelType || matchesProvider;
+  });
+
+  const sortedWorkflows = [...filteredWorkflows].sort((a, b) => {
+    const dateA = new Date(a.payment.paymentDate);
+    const dateB = new Date(b.payment.paymentDate);
+    return sortOrder === "newest"
+      ? dateB.getTime() - dateA.getTime()
+      : dateA.getTime() - dateB.getTime();
+  });
 
   return (
     <Card className="w-full max-w-5xl mx-auto p-4">
@@ -106,18 +74,10 @@ export default function ApprovalHistory() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Select defaultValue="all">
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Type: All" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem value="design">Design seat</SelectItem>
-            <SelectItem value="figjam">Fig/Jam seat</SelectItem>
-            <SelectItem value="dev">Dev Mode seat</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select defaultValue="newest">
+        <Select
+          defaultValue="newest"
+          onValueChange={(value) => setSortOrder(value)}
+        >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Sort: Newest first" />
           </SelectTrigger>
@@ -129,42 +89,51 @@ export default function ApprovalHistory() {
       </div>
 
       <div className="border rounded-lg divide-y">
-        <div className="px-6 py-3 text-sm text-muted-foreground grid grid-cols-[1fr_1fr_1fr_auto_auto] items-center gap-4">
-          <div>Approved At</div>
-          <div>Approver</div>
-          <div>Requestor</div>
-          <div>Request Type</div>
-          <div>Status</div>
+        <div className="px-6 py-3 text-sm text-muted-foreground grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr] items-center gap-4">
+          <div>承認日</div>
+          <div>承認者</div>
+          <div>申請者</div>
+          <div>燃料区分</div>
+          <div>金額</div>
+          <div>ステータス</div>
         </div>
-        {filteredHistory.map((history) => (
+        {sortedWorkflows.map((workflow) => (
           <div
-            key={history.id}
-            className="px-6 py-4 grid grid-cols-[1fr_1fr_1fr_auto_auto] items-center gap-4 hover:bg-muted/50"
+            key={workflow.id}
+            className="px-6 py-4 grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr] items-center gap-4 hover:bg-muted/50"
           >
-            <div className="text-sm text-muted-foreground">{history.approvedAt}</div>
-            <div className="flex items-center gap-2">
-              <Image
-                src={history.approver.avatar || "/placeholder.svg"}
-                alt=""
-                width={24}
-                height={24}
-                className="rounded-full"
-              />
-              <span className="text-sm font-medium">{history.approver.name}</span>
+            <div className="text-sm text-muted-foreground">
+              {new Date(workflow.payment.paymentDate).toLocaleDateString()}
             </div>
             <div className="flex items-center gap-2">
-              <Image
-                src={history.requestor.avatar || "/placeholder.svg"}
-                alt=""
+              <img
+                src={workflow.approvedBy.image || "/avatar.png"}
+                alt={workflow.approvedBy.name || "User avatar"}
                 width={24}
                 height={24}
                 className="rounded-full"
               />
-              <span className="text-sm font-medium">{history.requestor.name}</span>
+              <span className="text-sm font-medium">
+                {workflow.approvedBy.name}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <img
+                src={workflow.requestedBy.image || "/avatar.png"}
+                alt={workflow.requestedBy.name || "User avatar"}
+                width={24}
+                height={24}
+                className="rounded-full"
+              />
+              <span className="text-sm font-medium">
+                {workflow.requestedBy.name}
+              </span>
             </div>
             <div className="flex items-center gap-2 min-w-[120px]">
-              <span className="text-base">{history.typeIcon}</span>
-              <span className="text-sm">{history.type}</span>
+              <span className="text-sm">{workflow.payment.fuelType.name}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm">{workflow.payment.amount}円</span>
             </div>
             <div className="flex items-center gap-1 text-green-600">
               <CheckCircle2 className="h-4 w-4" />
@@ -174,6 +143,5 @@ export default function ApprovalHistory() {
         ))}
       </div>
     </Card>
-  )
+  );
 }
-

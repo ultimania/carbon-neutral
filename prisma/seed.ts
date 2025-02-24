@@ -52,17 +52,29 @@ async function main() {
 
   // Create FuelTypes
   const fuelType1 = await prisma.fuelType.create({
-    data: { name: 'Electricity' },
+    data: { name: '電気' },
   });
 
   const fuelType2 = await prisma.fuelType.create({
-    data: { name: 'Gas' },
+    data: { name: 'ガス' },
+  });
+
+  const fuelType3 = await prisma.fuelType.create({
+    data: { name: 'ガソリン' },
+  });
+
+  const fuelType4 = await prisma.fuelType.create({
+    data: { name: '軽油' },
+  });
+
+  const fuelType5 = await prisma.fuelType.create({
+    data: { name: '灯油' },
   });
 
   // Create Providers
   const provider1 = await prisma.provider.create({
     data: {
-      name: 'Provider A',
+      name: '東京電力',
       fuelTypeId: fuelType1.id,
       officeId: office1.id,
     },
@@ -70,9 +82,17 @@ async function main() {
 
   const provider2 = await prisma.provider.create({
     data: {
-      name: 'Provider B',
+      name: '東京ガス',
       fuelTypeId: fuelType2.id,
       officeId: office2.id,
+    },
+  });
+
+  const provider3 = await prisma.provider.create({
+    data: {
+      name: 'ENEOS',
+      fuelTypeId: fuelType3.id,
+      officeId: office1.id,
     },
   });
 
