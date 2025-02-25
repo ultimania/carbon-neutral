@@ -3,6 +3,16 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
+  // truncate all tables
+  await prisma.emission.deleteMany();
+  await prisma.workflow.deleteMany();
+  await prisma.payment.deleteMany();
+  await prisma.provider.deleteMany();
+  await prisma.fuelType.deleteMany();
+  await prisma.user.deleteMany();
+  await prisma.office.deleteMany();
+  await prisma.department.deleteMany();
+
   // Create Departments
   const department1 = await prisma.department.create({
     data: { name: 'Engineering' },
@@ -52,23 +62,23 @@ async function main() {
 
   // Create FuelTypes
   const fuelType1 = await prisma.fuelType.create({
-    data: { name: '電気' },
+    data: { name: '電気', emissionFactor: 0.5 },
   });
 
   const fuelType2 = await prisma.fuelType.create({
-    data: { name: 'ガス' },
+    data: { name: 'ガス', emissionFactor: 1.2 },
   });
 
   const fuelType3 = await prisma.fuelType.create({
-    data: { name: 'ガソリン' },
+    data: { name: 'ガソリン', emissionFactor: 2.3 },
   });
 
   const fuelType4 = await prisma.fuelType.create({
-    data: { name: '軽油' },
+    data: { name: '軽油', emissionFactor: 2.7 },
   });
 
   const fuelType5 = await prisma.fuelType.create({
-    data: { name: '灯油' },
+    data: { name: '灯油', emissionFactor: 2.1 },
   });
 
   // Create Providers

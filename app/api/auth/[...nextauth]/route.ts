@@ -29,8 +29,8 @@ const handler = NextAuth({
               name: user.name,
               email: email,
               image: user.image,
-              officeId: "b0884ea7-3be7-416f-9a89-74b5fe34e008", // Replace with actual default office ID
-              departmentId: "cm7iceaeb0001e2193kqtqpn1", // Replace with actual default department ID
+              officeId: "f5164b67-2e05-480f-8c07-2a642ef01c93", // Replace with actual default office ID
+              departmentId: "cm7kdj5vp0000e2f8uu9y4wl7", // Replace with actual default department ID
             },
           });
         }

@@ -42,8 +42,10 @@ model Department {
 }
 
 model FuelType {
-  id       String     @id @default(uuid())
-  name     String
+  id             String @id @default(uuid())
+  name           String
+  emissionFactor Float
+
   Payment  Payment[]
   Provider Provider[]
 }
@@ -61,6 +63,7 @@ model Payment {
   userInCharge User       @relation(fields: [userInChargeId], references: [id])
   Workflow     Workflow[]
   fuelType     FuelType   @relation(fields: [fuelTypeId], references: [id])
+  Emission     Emission[]
 
   @@map(name: "Payments")
 }
@@ -105,4 +108,16 @@ model Provider {
   fuelType FuelType @relation(fields: [fuelTypeId], references: [id])
   Office   Office?  @relation(fields: [officeId], references: [id])
   officeId String?
+}
+
+model Emission {
+  id        String   @id @default(uuid())
+  paymentId String
+  weight    Int
+  updatedAt DateTime @default(now()) @map(name: "created_at")
+  createdAt DateTime @updatedAt @map(name: "updated_at")
+
+  payment Payment @relation(fields: [paymentId], references: [id])
+
+  @@map(name: "Emissions")
 }
