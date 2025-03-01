@@ -1,48 +1,92 @@
+'use client';
 
-import React from 'react';
-import { Dropdown } from './Dropdown';
-import { Textarea } from './Textarea';
-import { Input } from './Input';
+import { useState } from "react";
+import { Button } from "./Button";
+import { Input } from "./Input";
 
-interface InputFormField<T> {
+export interface InputFormSchema<T> {
   label: string;
   type: string;
   name: keyof T;
   required: boolean;
   options?: string[];
   placeholder?: string;
+  hidden?: boolean;
 }
 
-export type InputFormFields<T> = InputFormField<T>[];
-
-interface InputFormProps{
-  fields: InputFormFields<any>;
-  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+export interface InputFormProps<T extends Record<string, unknown>> {
+  schema: InputFormSchema<T>[];
+  endpoint: string,
 }
 
-export const InputForm: React.FC<InputFormProps> = ({ fields, onSubmit }) => {
+export const InputForm = <T extends Record<string, unknown>>(
+  { schema, endpoint }: InputFormProps<T>,
+  ...props: any[]
+) => {
+  const [formData, setFormData] = useState<Record<string, any>>({});
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // post the form data to the server
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    // handle response
+    if (response.ok) {
+      console.log("Form submitted successfully");
+    } else {
+      console.error("Form submission failed");
+    }
+  };
+
   return (
-    <div className="bg-white p-4 rounded-lg shadow mb-6">
-      <h3 className="text-lg font-semibold mb-4">燃料費の登録</h3>
-      <form className="space-y-4" onSubmit={onSubmit}>
-        {fields.map((field, index) => (
-          <div key={index}>
-            <label className="block text-sm font-medium">{field.label}</label>
-            <div>
-              {field.type === 'dropdown' ? (
-                <Dropdown options={field.options || []} defaultOption={field.placeholder || ''} />
-              ) : field.type === 'textarea' ? (
-                <Textarea placeholder={field.placeholder || ''} />
-              ) : (
-                <Input type={field.type} placeholder={field.placeholder || ''} />
-              )}
+    <form onSubmit={handleSubmit} {...props}>
+      {schema.map((field) => {
+        if (field.hidden) return null;
+        return (
+          <label key={field.label as string} className="input-form">
+            <div className="flex my-2">
+              {field.label}
+              {field.required && <span>*</span>}
             </div>
-          </div>
-        ))}
-        <button type="submit" className="button-primary">
-          登録
-        </button>
-      </form>
-    </div>
+            {field.type === "select" ? (
+              <select
+                name={field.name as string}
+                className="w-full p-2 border border-gray-400 rounded"
+                onChange={handleChange}
+              >
+                {field.options?.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <Input
+                type={field.type}
+                name={field.name as string}
+                required={field.required}
+                placeholder={field.placeholder}
+                className="w-full p-2 border border-gray-400 rounded"
+                onChange={handleChange}
+              />
+            )}
+          </label>
+        );
+      })}
+      <Button type="submit" className="button">
+        登録
+      </Button>
+    </form>
   );
 };

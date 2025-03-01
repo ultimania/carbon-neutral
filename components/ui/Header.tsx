@@ -1,7 +1,12 @@
+'use client';
+
 import { SettingsIcon, BellIcon, UserIcon } from "lucide-react";
 import Breadcrumbs from "./Breadcrumbs";
+import { useSession } from 'next-auth/react';
 
 export default function Header() {
+  const { data: session } = useSession();
+
   return (
     <header className="flex items-center justify-between p-4 bg-white shadow-md">
       {/* Breadcrumb */}
@@ -24,7 +29,9 @@ export default function Header() {
         <BellIcon size={24} className="text-primary cursor-pointer" />
         <div className="flex items-center space-x-2">
           <UserIcon size={24} className="text-primary" />
-          <span className="text-primary">User Name</span>
+          <span className="text-primary">
+            {session ? session.user?.name : '未ログイン'}
+          </span>
         </div>
       </div>
     </header>
