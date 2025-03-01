@@ -5,7 +5,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./select";
+} from "./Select";
 
 interface DropdownProps {
   options: string[];

@@ -8,7 +8,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui/Select";
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/Card";
 import { Workflow, User, Payment, FuelType } from "@prisma/client";
