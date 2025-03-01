@@ -12,7 +12,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui/Select";
 import { FuelType, Payment, User, Workflow } from "@prisma/client";
 import { Card } from "@/components/ui/Card";
 import { useSession } from "next-auth/react";
