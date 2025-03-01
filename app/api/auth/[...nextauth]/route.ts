@@ -16,7 +16,7 @@ const handler = NextAuth({
     // This function runs after a user signs in
 
     // Googleアカウントでサインインした場合、ユーザーが存在しない場合は新規作成
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account }) {
       if (account?.provider === "google") {
         const email = user.email;
         const existingUser = await prisma.user.findUnique({

@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, ChevronRight } from "lucide-react";
+import { Search } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -50,7 +50,7 @@ export default function UpgradeRequests() {
     return matchesName || matchesFuelType || matchesProvider;
   });
 
-  const sortedWorkflows = [...filteredWorkflows].sort((a, b) => {
+  [...filteredWorkflows].sort((a, b) => {
     const dateA = new Date(a.payment.paymentDate);
     const dateB = new Date(b.payment.paymentDate);
     return sortOrder === "newest"
@@ -73,7 +73,7 @@ export default function UpgradeRequests() {
       });
 
       if (response.ok) {
-        const updatedWorkflow = await response.json();
+        // const updatedWorkflow = await response.json();
         setWorkflows((prevWorkflows) =>
           prevWorkflows.map((workflow) =>
             workflow.id === id ? { ...workflow, status: "Approved" } : workflow
@@ -102,7 +102,7 @@ export default function UpgradeRequests() {
       });
 
       if (response.ok) {
-        const updatedWorkflow = await response.json();
+        // const updatedWorkflow = await response.json();
         setWorkflows((prevWorkflows) =>
           prevWorkflows.map((workflow) =>
             workflow.id === id ? { ...workflow, status: "Rejected" } : workflow

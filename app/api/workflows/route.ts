@@ -67,6 +67,21 @@ export async function PUT(request: Request) {
       },
     });
 
+    // If status is 'Approved', POST /emissions to register CO2 emissions
+    if (status === "Approved") {
+      const payment = await prisma.payment.findFirst({
+        where: { id: workflow.paymentId },
+      });
+      // fetch emission data by POST method
+      await fetch("http://localhost:3000/api/emissions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ paymentId: payment?.id }),
+      });
+    }
+
     return new Response(JSON.stringify({ data: workflow }), {
       headers: { "Content-Type": "application/json" },
     });

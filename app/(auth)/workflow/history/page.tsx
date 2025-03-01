@@ -1,8 +1,6 @@
 "use client";
 
-import { ArrowLeft, Search, CheckCircle2, XCircle } from "lucide-react";
-import Image from "next/image";
-import { Button } from "@/components/ui/Button";
+import { Search, CheckCircle2, XCircle } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import {
   Select,

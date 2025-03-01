@@ -1,11 +1,11 @@
 import { PrismaClient } from '@prisma/client';
-import { TypeIcon } from 'lucide-react';
 
 const prisma = new PrismaClient();
 
 export async function GET(
   request: Request
 ) {
+  console.log('request', request);
   try {
     // PaymentsとUsersとWorkflowsのデータを結合して以下のようなデータを取得
     const workflows = await prisma.workflow.findMany({

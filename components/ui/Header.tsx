@@ -3,7 +3,6 @@
 import { SettingsIcon, BellIcon, UserIcon } from "lucide-react";
 import Breadcrumbs from "./Breadcrumbs";
 import { useSession } from 'next-auth/react';
-import Link from 'next/link';
 
 export default function Header() {
   const { data: session } = useSession();

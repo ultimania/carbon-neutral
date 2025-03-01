@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 
 // DBからfuelTypesを取得するためのGETメソッドを定義
 export async function GET(request: Request) {
+  console.log("request", request);
   try {
     const fuelTypes = await prisma.fuelType.findMany();
     return new Response(JSON.stringify({ data: fuelTypes }), {

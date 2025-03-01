@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import { Emission } from "@prisma/client";
 
 const prisma = new PrismaClient();
 

@@ -11,7 +11,7 @@ export default function Breadcrumbs() {
     const breadcrumbs: JSX.Element[] = [];
     let path = '';
 
-    segments.forEach((seg, index) => {
+    segments?.forEach((seg, index) => {
       if (seg === '(auth)') return; // Skip (auth) segment
       path += `/${seg}`;
       const displayPath = path.replace('/(auth)', ''); // Remove (auth) from path
